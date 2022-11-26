@@ -1,0 +1,147 @@
+html,
+body {
+  margin: 2em 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+/* typography and icons */
+
+h1 {
+  color: #0f8cdf;
+  margin-bottom: 10px;
+  font-size: 2em;
+}
+
+i:hover {
+
+}
+
+i {
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.fa-solid {
+  color: rgb(103, 103, 103);
+}
+
+.liked {
+  color: limegreen;
+}
+
+.unliked {
+  color: red;
+}
+
+/* layout */
+
+html {
+    background-color: rgba(240, 240, 240, 0.275);
+}
+
+main,
+header {
+  width: 60%;
+  margin: 0 auto;
+}
+
+header {
+  padding-bottom: 1em;
+}
+
+
+/* textareas + btn */
+
+.feed {
+    border-top: 1px solid rgba(236, 236, 236, 0.594);
+    padding: 1em 0 0 0;
+    width: 100%;
+    margin: 1em 0;
+}
+
+.comment-input-area {
+    display: flex;
+    flex-direction: column;
+
+}
+
+textarea::placeholder {
+    font-size: 1em;
+    font-family: "Roboto", sans-serif;
+    padding: 10px;
+}
+
+textarea {
+    white-space: pre-wrap;
+}
+
+.set-username {
+    width: 50%;
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.input-comment {
+    height: 7em;
+    margin-bottom: 1em;
+
+}
+
+.comment-btn {
+    width: 6em;
+}
+
+
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 1em;
+
+}
+
+.info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.icons {
+    margin-top: 0.5em;
+    display: flex;
+    justify-content: space-between;
+    width: 30vw;
+    margin-right: 10em;
+}
+
+/* tweet */
+
+.handle {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.date {
+    font-size: 1em;
+}
+
+.comment-inner {
+    margin-left: 5vw;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.comment-reply {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.hidden {
+    display: none;
+}
