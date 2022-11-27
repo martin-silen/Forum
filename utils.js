@@ -1,9 +1,28 @@
 
-function setCookie(name, value, daysToLive) {
-	const date = new Date()
-	date.setTime(date.getTime() + daysToLive * 24 * 60 * 60 * 1000) //24hr, 60min, 60sec, 1000ms
-	let expires = "expires=" + date.toUTCString()
-	document.cookie = `${name}=${value}; ${expires}`
+function getUser() {
+
+	const user = JSON.parse(localStorage.getItem('userName'))
+	if (!user){
+		document.getElementById('usernameBtn').addEventListener('click', function(e){
+		let usernameInput = document.getElementById('username-input')
+		let element = document.getElementById('usernameBtn')
+		let helloUser = document.getElementById('helloUser')
+
+		usernameInput.classList.add('hidden')
+		element.classList.add('hidden')
+		helloUser.classList.remove('hidden')
+
+		helloUser.innerHTML = `<div class ="helloUser">
+				<span class="wave">👋</span> Hello ${usernameInput.value}</div>`
+		
+		localStorage.setItem('userName', JSON.stringify(usernameInput.value))
+	})
+	} else {
+		return helloUser.innerHTML = `<div class ="helloUser">
+				<span class="wave">👋</span> Hello ${user}</div>`
+	}
+
+	console.log(user)
 }
 
 const month_names = [
@@ -57,4 +76,4 @@ function timeAgo(dateParameter) {
 }
 
 
-export {setCookie, timeAgo}
+export { timeAgo, getUser}

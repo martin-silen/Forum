@@ -3,7 +3,7 @@
 */
 import { commentsData } from "./data.js"
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid'
-import { setCookie, timeAgo } from "./utils.js"
+import { timeAgo, getUser } from "./utils.js"
 
 if(!JSON.parse(localStorage.getItem('data'))){
     localStorage.setItem('data', JSON.stringify(commentsData))
@@ -30,20 +30,6 @@ document.addEventListener('click', function(e){
 		handleEditClick(e.target.dataset.edit)
 	}
 })
-
-function getUser() {
-	document.getElementById('usernameBtn').addEventListener('click', function(e){
-		const usernameInput = document.getElementById('username-input')
-		const element = document.getElementById('usernameBtn')
-		const helloUser = document.getElementById('helloUser')
-
-		usernameInput.classList.add('hidden')
-		element.classList.add('hidden')
-		helloUser.classList.remove('hidden')
-
-		helloUser.innerHTML = `Hello ${usernameInput.value}`
-	})
-}
 
 function handleLikeClick(commentId) {
 	let data = JSON.parse(localStorage.getItem('data'))
@@ -81,18 +67,18 @@ function handleUnlikeClick(commentId) {
 }
 
 function handleReplyClick(replyId) {
-	let helloUser = document.getElementById('username-input')
+	let user = JSON.parse(localStorage.getItem('userName'))
 	document.getElementById(`replies-${replyId}`)
 	let data = JSON.parse(localStorage.getItem('data'))
-	let replyInputUser = document.getElementById(`reply-username-input-${replyId}`).value
 	let replyInput = document.getElementById(`reply-text-${replyId}`).value
 	if (replyInput) {
 		const targetCommentObj = data.filter(comment =>
 			comment.uuid === replyId)[0]
 			targetCommentObj.replies.unshift(
 				{
-					handle: replyInputUser.value ? helloUser.value : 'Visitor123',
-					commentText: replyInput
+					handle: user ? user : 'Visitor123',
+					commentText: replyInput,
+					date: timeAgo(new Date()),
 				}
 			)
 		replyInput = ''
@@ -123,14 +109,14 @@ function handleEditClick(editId) {
 
 
 function handleCommentBtnClick() {
-	const usernameInput = document.getElementById('username-input')
+	const usernameInput = JSON.parse(localStorage.getItem('userName'))
 	const commentInput = document.getElementById('comment-input')
 
 	let data = JSON.parse(localStorage.getItem('data'))
 	
     if(commentInput.value){
 		data.unshift({
-            handle: usernameInput.value ? usernameInput.value : 'Visitor123',
+            handle: usernameInput ? usernameInput : 'Visitor123',
             likes: 0,
             unlike: 0,
             commentText: commentInput.value,
@@ -143,13 +129,13 @@ function handleCommentBtnClick() {
 		localStorage.setItem('data', JSON.stringify(data))
 		render()
 		commentInput.value = ''
-		usernameInput.value = ''
     }
 }
 
 
 function getFeedHtml(){
 	let data = JSON.parse(localStorage.getItem('data'))
+	getUser()
     let feedHtml = ``
     
     data.forEach(function(comment){
@@ -171,7 +157,10 @@ function getFeedHtml(){
                 repliesHtml+=`
 					<div class="comment-inner">
 						<div class="reply">
-							<p class="handle">${reply.handle}</p>
+							<div class="info">
+								<p class="handle">${reply.handle},</p>
+								<p class="date">${reply.date}</p>
+							</div>
 							<p class="comment-text">${reply.commentText}</p>
 						</div>
 					</div>`
@@ -188,36 +177,37 @@ function getFeedHtml(){
 			<div class="feed">
 				<div class="container">
 						<div class = "info">
-							<p class="handle">${comment.handle}</p>
+							<p class="handle">${comment.handle},</p>
 							<p class="date">${comment.date}</p>
 						</div>
 						<div class="comment-text">
 							<p id="comment-${comment.uuid}" class="comment-text">${comment.commentText}<span id="edited" ></span></p>
 						</div>
 						<div class="icons">
-							<span class="icons">
+							<span class="icon-info">
 							<i class="fa-solid fa-thumbs-up ${likeIconClass}"
 							data-like="${comment.uuid}"
-							></i>${comment.likes}
+							></i> ${comment.likes}
 							</span>
-							<span class="icons">
+							<span class="icon-info">
 							<i class="fa-solid fa-thumbs-down ${unlikeIconClass}"
 							data-unlike="${comment.uuid}"
-							></i>${comment.unlike}
+							></i> ${comment.unlike}
 							</span>
-							<span class="icons">
+							<span class="icon-info">
 							<i class="fa-solid fa-edit"
 							data-edit="${comment.uuid}"
-							></i>
+							></i> edit
 							</span>
 						</div>              
 				</div>
 				<div id="replies-${comment.uuid}">
         				<div class="comment-reply">
 							${repliesHtml}
-							<input class="comment-set-username" type="text" placeholder="Set a username" id="reply-username-input-${comment.uuid}">
-							<textarea id="reply-text-${comment.uuid}" placeholder="Type your comment here..."></textarea>
-							<button id="reply-btn" class="reply-btn" data-reply="${comment.uuid}">Reply</button>
+							<div class="reply-field">
+								<textarea id="reply-text-${comment.uuid}" placeholder="Type your comment here..."></textarea>
+								<button id="reply-btn" class="reply-btn" data-reply="${comment.uuid}">Reply</button>
+							</div>
       					</div>
      				</dv>
 				</div>   
@@ -233,4 +223,4 @@ function render(){
 
 render()
 
-getUser()
+console.log(getUser())
