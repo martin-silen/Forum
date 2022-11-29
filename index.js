@@ -1,6 +1,3 @@
-/*
-	import data from separate file (?)
-*/
 import { commentsData } from "./data.js"
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid'
 import { timeAgo, getUser } from "./utils.js"
@@ -40,13 +37,16 @@ function handleLikeClick(commentId) {
 	if(targetCommentObj.isLiked) {
 		targetCommentObj.likes--
 	} 
-	else {
+	else if(targetCommentObj.isUnliked){
+		targetCommentObj.likes++
+		targetCommentObj.unlike--
+		targetCommentObj.isUnliked = false
+	} else {
 		targetCommentObj.likes++
 	}
 	targetCommentObj.isLiked = !targetCommentObj.isLiked
 	localStorage.setItem("data", JSON.stringify(data))
 	render()
-	console.log(commentId)
 }
 
 function handleUnlikeClick(commentId) {
@@ -58,7 +58,11 @@ function handleUnlikeClick(commentId) {
 	if(targetCommentObj.isUnliked){
 		targetCommentObj.unlike--
 	} 
-	else {
+	else if(targetCommentObj.isLiked){
+		targetCommentObj.unlike++
+		targetCommentObj.likes--
+		targetCommentObj.isLiked = false
+	} else {
 		targetCommentObj.unlike++
 	}
 	targetCommentObj.isUnliked = !targetCommentObj.isUnliked
@@ -68,24 +72,27 @@ function handleUnlikeClick(commentId) {
 
 function handleReplyClick(replyId) {
 	let user = JSON.parse(localStorage.getItem('userName'))
-	document.getElementById(`replies-${replyId}`)
 	let data = JSON.parse(localStorage.getItem('data'))
+	document.getElementById(`replies-${replyId}`)
 	let replyInput = document.getElementById(`reply-text-${replyId}`).value
-	if (replyInput) {
+	if (replyInput && user) {
 		const targetCommentObj = data.filter(comment =>
 			comment.uuid === replyId)[0]
 			targetCommentObj.replies.unshift(
 				{
-					handle: user ? user : 'Visitor123',
+					handle: user,
 					commentText: replyInput,
 					date: timeAgo(new Date()),
 				}
 			)
 		replyInput = ''
 		localStorage.setItem('data', JSON.stringify(data))
+	} else {
+		alert('Please set a username or write a reply')
+		replyInput = ''
 		render()
-		handleReplyClick(replyId)
 	}
+	render()
 }
 
 function handleEditClick(editId) {
@@ -98,10 +105,8 @@ function handleEditClick(editId) {
 		return comment.uuid === editId
 	})[0]
 
-	targetCommentObj.commentText = prompt('Edit your tweet')
+	targetCommentObj.commentText = prompt('Edit your comment')
 	targetCommentObj.commentText += ` (edited)`
-
-	console.log(targetCommentObj.commentText)
 
 	localStorage.setItem('data', JSON.stringify(data))
 	render()
@@ -110,13 +115,12 @@ function handleEditClick(editId) {
 
 function handleCommentBtnClick() {
 	const usernameInput = JSON.parse(localStorage.getItem('userName'))
-	const commentInput = document.getElementById('comment-input')
-
 	let data = JSON.parse(localStorage.getItem('data'))
+	const commentInput = document.getElementById('comment-input')
 	
-    if(commentInput.value){
+    if(commentInput.value && usernameInput){
 		data.unshift({
-            handle: usernameInput ? usernameInput : 'Visitor123',
+            handle: usernameInput,
             likes: 0,
             unlike: 0,
             commentText: commentInput.value,
@@ -129,15 +133,17 @@ function handleCommentBtnClick() {
 		localStorage.setItem('data', JSON.stringify(data))
 		render()
 		commentInput.value = ''
-    }
+    } else {
+		alert('Please set a username')
+		commentInput.value = ''
+	}
 }
 
 
 function getFeedHtml(){
 	let data = JSON.parse(localStorage.getItem('data'))
-	getUser()
     let feedHtml = ``
-    
+    getUser()
     data.forEach(function(comment){
         
         let likeIconClass = ''
@@ -167,12 +173,6 @@ function getFeedHtml(){
             })
         }
 
-		let editHtml = ''
-
-		editHtml += `
-
-		`
-          
         feedHtml += `
 			<div class="feed">
 				<div class="container">
@@ -181,7 +181,7 @@ function getFeedHtml(){
 							<p class="date">${comment.date}</p>
 						</div>
 						<div class="comment-text">
-							<p id="comment-${comment.uuid}" class="comment-text">${comment.commentText}<span id="edited" ></span></p>
+							<p id="comment-${comment.uuid}">${comment.commentText}</p>
 						</div>
 						<div class="icons">
 							<span class="icon-info">
@@ -205,7 +205,7 @@ function getFeedHtml(){
         				<div class="comment-reply">
 							${repliesHtml}
 							<div class="reply-field">
-								<textarea id="reply-text-${comment.uuid}" placeholder="Type your comment here..."></textarea>
+								<textarea id="reply-text-${comment.uuid}" placeholder="Type your reply here..."></textarea>
 								<button id="reply-btn" class="reply-btn" data-reply="${comment.uuid}">Reply</button>
 							</div>
       					</div>
@@ -222,5 +222,3 @@ function render(){
 }
 
 render()
-
-console.log(getUser())

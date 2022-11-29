@@ -1,4 +1,3 @@
-
 function getUser() {
 
 	const user = JSON.parse(localStorage.getItem('userName'))
@@ -21,8 +20,6 @@ function getUser() {
 		return helloUser.innerHTML = `<div class ="helloUser">
 				<span class="wave">👋</span> Hello ${user}</div>`
 	}
-
-	console.log(user)
 }
 
 const month_names = [
@@ -58,8 +55,6 @@ function timeAgo(dateParameter) {
 	const day_in_ms = 86400000; // 24*60*60*1000
 	const today = new Date();
 	const yesterday = new Date(today - day_in_ms);
-	const seconds = Math.round((today - date) / 1000);
-	const minutes = Math.round(seconds / 60);
 	const isToday = today.toDateString() === date.toDateString();
 	const isYesterday = yesterday.toDateString() === date.toDateString();
 	const isThisYear = today.getFullYear() === date.getFullYear();
@@ -76,4 +71,4 @@ function timeAgo(dateParameter) {
 }
 
 
-export { timeAgo, getUser}
+export { timeAgo, getUser }
